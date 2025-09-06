@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-
+const connDB = require("./utils/db");
 dotenv.config();
 
 const app = express();
@@ -8,6 +8,8 @@ const app = express();
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+connDB();
 
 const PORT = process.env.PORT || 3000;
 
