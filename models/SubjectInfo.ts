@@ -4,6 +4,7 @@ export interface ISubjectInfo extends Document {
   subject_id: string;
   subject_name: string;
   class_id: mongoose.Types.ObjectId;
+  school_id?: mongoose.Types.ObjectId;
   teacher_id: mongoose.Types.ObjectId;
   teacher_name: string;
   createdAt?: Date;
@@ -15,6 +16,7 @@ const SubjectInfoSchema: Schema<ISubjectInfo> = new Schema(
     subject_id: { type: String, required: true, unique: true },
     subject_name: { type: String, required: true },
     class_id: { type: Schema.Types.ObjectId, ref: "ClassInfo" },
+    school_id: { type: Schema.Types.ObjectId, ref: "School" },
     teacher_id: { type: Schema.Types.ObjectId, ref: "TeacherProfile" },
     teacher_name: { type: String, required: true },
   },
