@@ -222,31 +222,100 @@
 
 // seedMarks();
 
-// import mongoose from "mongoose";
-// import { StudentProfile } from "./models/StudentProfile"; // adjust path if needed
-// import dotenv from "dotenv";
+import mongoose from "mongoose";
+import { StudentProfile } from "./models/StudentProfile"; // adjust path if needed
+import dotenv from "dotenv";
+import { TeacherProfile } from "./models/TeacherProfile";
 
-// dotenv.config();
+dotenv.config();
+
+const MONGO_URI = process.env.DB_URL || "";
+
+async function updatePasswords() {
+    try {
+        await mongoose.connect(MONGO_URI);
+
+        for (let i = 0; i < 200; i++) {
+            const x: string = i % 2 == 0 ? "Class1" : "Class2"
+            // Update all students missing password field
+            console.log("STU" + (i + 1))
+            await StudentProfile.findOneAndUpdate(
+                { student_id: "STU" + (i + 1) }, // only those missing password
+                { class_id: x },
+                { new: true }
+            );
+        }
+
+        const result = await TeacherProfile.updateMany(
+            { password: { $exists: false } }, // only teachers without password
+            { $set: { password: "teacher123" } }
+        );
+
+        console.log(`✅ Updated ${result.modifiedCount} teacher passwords.`);
+
+        await mongoose.disconnect();
+    } catch (error) {
+        console.error("❌ Error updating passwords:", error);
+        process.exit(1);
+    }
+}
+
+updatePasswords();
+// import mongoose from "mongoose";
+// import { HandlingClass } from "./models/HandlingClass";
+// import { TeacherProfile } from "./models/TeacherProfile";
+// import { StudentProfile } from "./models/StudentProfile";
+
+// require("dotenv").config();
 
 // const MONGO_URI = process.env.DB_URL || "";
 
-// async function updatePasswords() {
+// const seedHandlingClasses = async () => {
 //     try {
 //         await mongoose.connect(MONGO_URI);
+//         console.log("✅ Connected to MongoDB");
 
-//         // Update all students missing password field
-//         const result = await StudentProfile.updateMany(
-//             { password: { $exists: false } }, // only those missing password
-//             { $set: { password: "p123" } }
-//         );
+//         await HandlingClass.deleteMany({}); // clear old data
 
-//         console.log(`✅ Updated ${result.modifiedCount} students with default password "p123".`);
+//         const teachers = await TeacherProfile.find();
+//         const students = await StudentProfile.find();
 
+//         if (teachers.length === 0 || students.length === 0) {
+//             console.log("⚠️ Missing prerequisite data. Please seed TeacherProfile and StudentProfile first.");
+//             return;
+//         }
+
+//         const handlingClassesData: any[] = [];
+
+//         // 📌 For Class1
+//         const class1Students = students.filter((s) => s.class_id === "Class1");
+//         const teacher1 = teachers[0]; // first teacher
+//         handlingClassesData.push({
+//             classId: "Class1",
+//             teacherId: teacher1.teacherId,
+//             studentIds: class1Students.map((s) => s.student_id),
+//             studentNames: class1Students.map((s) => s.name),
+//         });
+
+//         // 📌 For Class2
+//         const class2Students = students.filter((s) => s.class_id === "Class2");
+//         const teacher2 = teachers.length > 1 ? teachers[1] : teachers[0]; // second teacher if exists
+//         handlingClassesData.push({
+//             classId: "Class2",
+//             teacherId: teacher2.teacherId,
+//             studentIds: class2Students.map((s) => s.student_id),
+//             studentNames: class2Students.map((s) => s.name),
+//         });
+
+//         await HandlingClass.insertMany(handlingClassesData);
+
+//         console.log("✅ HandlingClass seeding completed successfully!");
+//     } catch (err) {
+//         console.error("❌ Error seeding HandlingClass:", err);
+//     } finally {
 //         await mongoose.disconnect();
-//     } catch (error) {
-//         console.error("❌ Error updating passwords:", error);
-//         process.exit(1);
 //     }
-// }
+// };
 
-// updatePasswords();
+// seedHandlingClasses();
+

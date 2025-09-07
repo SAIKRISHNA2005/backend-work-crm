@@ -4,7 +4,7 @@ type FeeStatus = "paid" | "pending" | "partial";
 
 export interface IStudentProfile extends Document {
   student_id: string;
-  class_id: mongoose.Types.ObjectId;
+  class_id: string;
   password: string;
   name: string;
   roll_number: string;
@@ -38,7 +38,7 @@ export interface IStudentProfile extends Document {
 const StudentProfileSchema: Schema<IStudentProfile> = new Schema(
   {
     student_id: { type: String, required: true, unique: true },
-    class_id: { type: Schema.Types.ObjectId, ref: "ClassInfo" },
+    class_id: { type: String },
     password: { type: String, required: true },
     name: { type: String, required: true },
     roll_number: { type: String, required: true },

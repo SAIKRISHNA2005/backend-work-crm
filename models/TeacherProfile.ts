@@ -4,6 +4,7 @@ export interface ITeacherProfile extends Document {
   teacherId: string;
   name: string;
   phoneNumber: string;
+  password: string;
   email: string;
   address: string;
   bloodGroup: string;
@@ -19,6 +20,7 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>({
   teacherId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   phoneNumber: { type: String, required: true },
+  password: { type: String, required: true },
   email: { type: String },
   address: { type: String },
   bloodGroup: { type: String },

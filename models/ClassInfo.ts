@@ -11,7 +11,7 @@ export interface IClassInfo extends Document {
 
 const ClassInfoSchema: Schema<IClassInfo> = new Schema(
   {
-    class_id: { type: String, required: true, unique: true },
+    class_id: { type: String, required: true },
     student_id: [{ type: Schema.Types.ObjectId, ref: "StudentProfile" }],
     classroom_number: { type: String },
     home_class_teacher_name: { type: String },
