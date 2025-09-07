@@ -1,8 +1,7 @@
-import { Schema, model, Types, Document } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface ITeacherProfile extends Document {
   teacherId: string;
-  schoolId: string;
   name: string;
   phoneNumber: string;
   email: string;
@@ -18,7 +17,6 @@ export interface ITeacherProfile extends Document {
 
 const TeacherProfileSchema = new Schema<ITeacherProfile>({
   teacherId: { type: String, required: true, unique: true },
-  schoolId: { type: String, required: true },
   name: { type: String, required: true },
   phoneNumber: { type: String, required: true },
   email: { type: String },
@@ -32,4 +30,4 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>({
   salaryStatus: { type: String, enum: ["credited", "pending"], default: "pending" },
 }, { timestamps: true });
 
-export const TeacherProfile = model<ITeacherProfile>("TeacherProfile", TeacherProfileSchema);
+export const TeacherProfile: Model<ITeacherProfile> = mongoose.model<ITeacherProfile>("TeacherProfile", TeacherProfileSchema);

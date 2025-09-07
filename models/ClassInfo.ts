@@ -2,7 +2,6 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IClassInfo extends Document {
   class_id: string;
-  school_id: mongoose.Types.ObjectId;
   student_id?: mongoose.Types.ObjectId[];
   classroom_number?: string;
   home_class_teacher_name?: string;
@@ -13,7 +12,6 @@ export interface IClassInfo extends Document {
 const ClassInfoSchema: Schema<IClassInfo> = new Schema(
   {
     class_id: { type: String, required: true, unique: true },
-    school_id: { type: Schema.Types.ObjectId, ref: "School", required: true },
     student_id: [{ type: Schema.Types.ObjectId, ref: "StudentProfile" }],
     classroom_number: { type: String },
     home_class_teacher_name: { type: String },
@@ -21,9 +19,8 @@ const ClassInfoSchema: Schema<IClassInfo> = new Schema(
   { timestamps: true }
 );
 
-const ClassInfo: Model<IClassInfo> = mongoose.model<IClassInfo>(
+export const ClassInfo: Model<IClassInfo> = mongoose.model<IClassInfo>(
   "ClassInfo",
   ClassInfoSchema
 );
 
-export default ClassInfo;

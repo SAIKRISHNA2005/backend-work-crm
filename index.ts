@@ -12,6 +12,9 @@ app.use(express.json());
 app.get("/", (req: Request, res: Response): void => {
   res.send("Hello World!");
 });
+app.get("/home", (req: Request, res: Response): void => {
+  res.send("Welcome to the Home Page!");
+});
 
 connectDB();
 

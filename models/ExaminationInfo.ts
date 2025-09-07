@@ -40,9 +40,8 @@ const ExaminationInfoSchema: Schema<IExaminationInfo> = new Schema(
   { timestamps: true }
 );
 
-const ExaminationInfo: Model<IExaminationInfo> = mongoose.model<IExaminationInfo>(
+export const ExaminationInfo: Model<IExaminationInfo> = mongoose.model<IExaminationInfo>(
   "ExaminationInfo",
   ExaminationInfoSchema
 );
 
-export default ExaminationInfo;

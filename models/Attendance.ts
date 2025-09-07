@@ -3,9 +3,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 type LeaveStatus = "accepted" | "rejected" | "pending";
 
 interface IAttendance extends Document {
-  student_id: mongoose.Types.ObjectId;
+  student_id: string;
   class_id: mongoose.Types.ObjectId;
-  school_id: mongoose.Types.ObjectId;
   teacher_id?: mongoose.Types.ObjectId;
   student_name?: string;
   home_class_teacher_name?: string;
@@ -24,18 +23,13 @@ interface IAttendance extends Document {
 const AttendanceSchema: Schema<IAttendance> = new Schema(
   {
     student_id: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "StudentProfile",
       required: true,
     },
     class_id: {
       type: Schema.Types.ObjectId,
       ref: "ClassInfo",
-      required: true,
-    },
-    school_id: {
-      type: Schema.Types.ObjectId,
-      ref: "School",
       required: true,
     },
     teacher_id: { type: Schema.Types.ObjectId, ref: "TeacherProfile" },
@@ -57,9 +51,7 @@ const AttendanceSchema: Schema<IAttendance> = new Schema(
   { timestamps: true }
 );
 
-const Attendance: Model<IAttendance> = mongoose.model<IAttendance>(
+export const Attendance: Model<IAttendance> = mongoose.model<IAttendance>(
   "Attendance",
   AttendanceSchema
 );
-
-export default Attendance;

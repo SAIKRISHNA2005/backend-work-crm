@@ -33,9 +33,8 @@ const AcademicCalendarSchema: Schema<IAcademicCalendar> = new Schema(
   { timestamps: true }
 );
 
-const AcademicCalendar: Model<IAcademicCalendar> = mongoose.model<IAcademicCalendar>(
+export const AcademicCalendar: Model<IAcademicCalendar> = mongoose.model<IAcademicCalendar>(
   "AcademicCalendar",
   AcademicCalendarSchema
 );
 
-export default AcademicCalendar;

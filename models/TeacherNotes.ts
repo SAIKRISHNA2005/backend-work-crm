@@ -3,7 +3,6 @@ import { Schema, model, Document } from "mongoose";
 export interface ITeacherNotes extends Document {
   teacherId: string;
   classId: string;
-  sectionId: string;
   subjectId: string;
   subjectName: string;
   title: string;
@@ -21,7 +20,6 @@ export interface ITeacherNotes extends Document {
 const TeacherNotesSchema = new Schema<ITeacherNotes>({
   teacherId: { type: String, required: true },
   classId: { type: String, required: true },
-  sectionId: { type: String },
   subjectId: { type: String },
   subjectName: { type: String, required: true },
   title: { type: String, required: true },
