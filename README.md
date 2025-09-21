@@ -174,8 +174,8 @@ npm start
 - `PUT /api/notes/:id/publish` - Publish/unpublish note
 
 ### Timetable
-- `GET /api/timetable` - Get timetable (placeholder)
-- `POST /api/timetable` - Create timetable entry (placeholder)
-- `PUT /api/timetable/:id` - Update timetable entry (placeholder)
-- `GET /api/timetable/class/:classId` - Get timetable by class (placeholder)
-- `GET /api/timetable/teacher/:teacherId` - Get timetable by teacher (placeholder)
+- `GET /api/timetable` - Get timetable
+- `POST /api/timetable` - Create timetable entry
+- `PUT /api/timetable/:id` - Update timetable entry
+- `GET /api/timetable/class/:classId` - Get timetable by class
+- `GET /api/timetable/teacher/:teacherId` - Get timetable by teacher
