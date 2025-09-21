@@ -1,5 +1,13 @@
 node_modules/
 .env
-
-models/
-seed/
+dist/
+src/models/Readme.md
+logs/
+.env.backup
+API_TEST_RESULT.csv
+API_TEST_RESULT.xlsx
+COMPREHENSIVE_TEST_PLAN.md
+COMPREHENSIVE_TEST_SUMMARY.md
+POSTMAN_TESTING_GUIDE.md
+run_comprehensive_tests.ps1
+COMPREHENSIVE_API_TEST_PLAN.md

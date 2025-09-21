@@ -6,6 +6,26 @@ import { studentValidations, commonValidations, handleValidationErrors } from ".
 
 const router = express.Router();
 
+// Info route (before authentication)
+router.get("/info", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Student management endpoints",
+    endpoints: {
+      getAllStudents: "GET /api/students",
+      getStudentProfile: "GET /api/students/profile/:id",
+      updateStudentProfile: "PUT /api/students/profile/:id",
+      createStudent: "POST /api/students",
+      searchStudents: "GET /api/students/search",
+      getStudentsByClass: "GET /api/students/class/:classId",
+      getStudentsBySchool: "GET /api/students/school/:schoolId",
+      getStudentStats: "GET /api/students/stats",
+      getStudentCount: "GET /api/students/count",
+      deleteStudent: "DELETE /api/students/:id"
+    }
+  });
+});
+
 // All routes require authentication
 router.use(authenticate);
 

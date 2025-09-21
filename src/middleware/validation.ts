@@ -19,8 +19,8 @@ export const handleValidationErrors = (req: Request, res: Response, next: NextFu
 
 // Common validation rules
 export const commonValidations = {
-  // ObjectId validation
-  objectId: (field: string) => param(field).isMongoId().withMessage(`Invalid ${field} format`),
+  // ID validation (for PostgreSQL integer IDs)
+  objectId: (field: string) => param(field).isInt({ min: 1 }).withMessage(`Invalid ${field} format`),
   
   // String validation
   requiredString: (field: string, minLength: number = 1, maxLength: number = 255) =>
@@ -100,16 +100,17 @@ export const commonValidations = {
 // Specific validation rules for different entities
 export const authValidations = {
   login: [
-    body("accId").notEmpty().withMessage("Account ID is required"),
+    body("accId").notEmpty().withMessage("Account ID (username) is required"),
     body("password").notEmpty().withMessage("Password is required"),
-    body("role").isIn(["student", "teacher", "admin"]).withMessage("Invalid role"),
+    body("role").isIn(["student", "teacher", "admin", "super_admin"]).withMessage("Invalid role"),
   ],
   
   register: [
-    body("name").trim().isLength({ min: 2, max: 100 }).withMessage("Name must be between 2 and 100 characters"),
-    body("email").isEmail().normalizeEmail().withMessage("Please provide a valid email"),
-    body("phoneNumber").matches(/^[0-9]{10}$/).withMessage("Phone number must be exactly 10 digits"),
+    body("username").notEmpty().withMessage("Username is required"),
+    body("email").optional().isEmail().normalizeEmail().withMessage("Please provide a valid email"),
+    body("phone").optional().matches(/^[0-9]{10}$/).withMessage("Phone number must be exactly 10 digits"),
     body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
+    body("role").isIn(["student", "teacher", "admin", "super_admin"]).withMessage("Invalid role"),
   ],
 };
 
@@ -148,8 +149,8 @@ export const teacherValidations = {
 
 export const marksValidations = {
   create: [
-    body("student_id").notEmpty().withMessage("Student ID is required"),
-    body("subject_id").isMongoId().withMessage("Invalid subject ID"),
+    body("student_id").isInt({ min: 1 }).withMessage("Student ID is required"),
+    body("subject_id").isInt({ min: 1 }).withMessage("Invalid subject ID"),
     body("marks_obtained").isFloat({ min: 0, max: 100 }).withMessage("Marks must be between 0 and 100"),
     body("class_code").notEmpty().withMessage("Class code is required"),
   ],

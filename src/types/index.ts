@@ -1,5 +1,4 @@
 import { Request } from "express";
-import { Document } from "mongoose";
 
 // Extend Express Request interface to include user
 export interface AuthenticatedRequest extends Request {
@@ -73,9 +72,10 @@ export interface AppError extends Error {
 }
 
 // Database document with common fields
-export interface BaseDocument extends Document {
-  createdAt: Date;
-  updatedAt: Date;
+export interface BaseDocument {
+  id: number;
+  created_at: string;
+  updated_at: string;
 }
 
 // Attendance status

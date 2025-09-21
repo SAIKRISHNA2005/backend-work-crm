@@ -1,29 +1,96 @@
-# School Management System Backend
+# School Management System - Backend
 
-A comprehensive backend API for a school management system built with Node.js, TypeScript, Express, and Supabase (PostgreSQL).
+A comprehensive Express.js backend API for a school management system built with TypeScript, Supabase, and modern security practices.
 
 ## 🚀 Features
 
 - **Authentication & Authorization**: JWT-based authentication with role-based access control
-- **User Management**: Student and teacher profile management
-- **Database**: PostgreSQL with Supabase for scalable data management
-- **Security**: Helmet, CORS, rate limiting, input validation
-- **Logging**: Winston-based structured logging
-- **Error Handling**: Comprehensive error handling with custom error classes
-- **API Documentation**: RESTful API with proper HTTP status codes
+- **User Management**: Student, teacher, and admin user management
+- **Student Management**: Complete student profile and academic management
+- **Teacher Management**: Teacher profiles and class assignments
+- **Attendance Tracking**: Student attendance management
+- **Marks Management**: Academic performance tracking
+- **Class & Subject Management**: Academic structure management
+- **Event Management**: School events and announcements
+- **Notes Management**: Teacher notes and resources
+- **Security**: Rate limiting, CORS, Helmet, input validation
+- **Logging**: Comprehensive logging with Winston
+- **Database**: Supabase PostgreSQL with type-safe operations
 
-## 📋 Prerequisites
+## 🛠️ Tech Stack
 
-- Node.js (v18 or higher)
-- npm or yarn
-- Supabase account and project
+- **Runtime**: Node.js with TypeScript
+- **Framework**: Express.js
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: JWT with bcrypt
+- **Validation**: Express-validator with Zod
+- **Security**: Helmet, CORS, Rate limiting
+- **Logging**: Winston
+- **Development**: ts-node-dev
 
-## 🛠️ Installation
+## 📁 Project Structure
+
+```
+backend/
+├── src/
+│   ├── config/          # Configuration files
+│   │   ├── database.ts  # Supabase configuration
+│   │   └── environment.ts # Environment variables
+│   ├── controllers/     # Route controllers
+│   │   ├── AuthController.ts
+│   │   ├── StudentController.ts
+│   │   ├── TeacherController.ts
+│   │   ├── AttendanceController.ts
+│   │   ├── MarksController.ts
+│   │   ├── ClassController.ts
+│   │   ├── SubjectController.ts
+│   │   ├── EventController.ts
+│   │   ├── NoteController.ts
+│   │   └── TimetableController.ts
+│   ├── middleware/      # Express middleware
+│   │   ├── auth.ts      # Authentication middleware
+│   │   ├── errorHandler.ts # Error handling
+│   │   ├── rateLimiter.ts # Rate limiting
+│   │   ├── security.ts  # Security headers
+│   │   └── validation.ts # Input validation
+│   ├── routes/          # API routes
+│   │   ├── authRoutes.ts
+│   │   ├── studentRoutes.ts
+│   │   ├── teacherRoutes.ts
+│   │   ├── attendanceRoutes.ts
+│   │   ├── marksRoutes.ts
+│   │   ├── classRoutes.ts
+│   │   ├── subjectRoutes.ts
+│   │   ├── eventRoutes.ts
+│   │   ├── noteRoutes.ts
+│   │   └── timetableRoutes.ts
+│   ├── services/        # Business logic
+│   │   ├── database.ts  # Database service
+│   │   ├── UserService.ts
+│   │   ├── StudentService.ts
+│   │   └── TeacherService.ts
+│   ├── types/           # TypeScript types
+│   │   ├── index.ts     # Common types
+│   │   └── database.ts  # Database types
+│   ├── utils/           # Utility functions
+│   │   └── logger.ts    # Logging configuration
+│   ├── app.ts           # Express app configuration
+│   └── server.ts        # Server startup
+├── docs/                # Documentation
+│   └── supabase-schema.sql
+├── logs/                # Log files
+├── dist/                # Compiled JavaScript
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## 🔧 Installation
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd backend-work-crm
+   cd backend
    ```
 
 2. **Install dependencies**
@@ -38,82 +105,50 @@ A comprehensive backend API for a school management system built with Node.js, T
    
    Update the `.env` file with your configuration:
    ```env
-   # Application Configuration
    NODE_ENV=development
    PORT=3000
    FRONTEND_URL=http://localhost:3000
-
+   
    # Supabase Configuration
    SUPABASE_URL=your-supabase-url
    SUPABASE_ANON_KEY=your-supabase-anon-key
    SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
-
+   
    # JWT Configuration
    JWT_SECRET=your-super-secret-jwt-key-that-is-at-least-32-characters-long
    JWT_EXPIRES_IN=7d
-
+   
    # Security Configuration
    BCRYPT_ROUNDS=12
    UPLOAD_MAX_SIZE=10485760
-
+   
    # Rate Limiting
    RATE_LIMIT_WINDOW_MS=900000
    RATE_LIMIT_MAX_REQUESTS=100
-
+   
    # Logging
    LOG_LEVEL=info
    ```
 
 4. **Database Setup**
-   
-   Run the SQL schema in your Supabase project:
-   ```bash
-   # Copy the contents of docs/supabase-schema.sql and run it in your Supabase SQL editor
-   ```
+   - Create a Supabase project
+   - Run the SQL schema from `docs/supabase-schema.sql`
+   - Update the environment variables with your Supabase credentials
 
-5. **Start the development server**
-   ```bash
-   npm start
-   ```
+## 🚀 Running the Application
 
-## 📁 Project Structure
-
-```
-src/
-├── config/           # Configuration files
-│   ├── database.ts   # Database connection
-│   └── environment.ts # Environment validation
-├── controllers/      # Request handlers
-│   ├── AuthController.ts
-│   ├── StudentController.ts
-│   └── TeacherController.ts
-├── middleware/       # Express middleware
-│   ├── auth.ts       # Authentication middleware
-│   ├── errorHandler.ts # Error handling
-│   ├── rateLimiter.ts # Rate limiting
-│   ├── security.ts   # Security headers
-│   └── validation.ts # Input validation
-├── models/          # Database models (legacy - being migrated)
-├── routes/          # API routes
-│   ├── authRoutes.ts
-│   ├── studentRoutes.ts
-│   ├── teacherRoutes.ts
-│   └── ...
-├── services/        # Business logic
-│   ├── database.ts  # Generic database service
-│   ├── UserService.ts
-│   ├── StudentService.ts
-│   └── TeacherService.ts
-├── types/           # TypeScript type definitions
-│   ├── index.ts     # Common types
-│   └── database.ts  # Database types
-├── utils/           # Utility functions
-│   └── logger.ts    # Logging configuration
-├── app.ts           # Express app configuration
-└── server.ts        # Server startup
+### Development Mode
+```bash
+npm run dev
 ```
 
-## 🔧 API Endpoints
+### Production Build
+```bash
+npm run build
+npm start
+```
+
+## 📚 API Endpoints
 
 ### Authentication
 - `POST /api/auth/login` - User login
@@ -125,9 +160,9 @@ src/
 - `GET /api/auth/verify` - Verify token
 
 ### Students
-- `GET /api/students` - Get all students (with pagination)
+- `GET /api/students` - Get all students
+- `POST /api/students` - Create student
 - `GET /api/students/:id` - Get student by ID
-- `POST /api/students` - Create new student
 - `PUT /api/students/:id` - Update student
 - `DELETE /api/students/:id` - Delete student
 - `GET /api/students/search` - Search students
@@ -135,120 +170,159 @@ src/
 - `GET /api/students/school/:schoolId` - Get students by school
 
 ### Teachers
-- `GET /api/teachers` - Get all teachers (with pagination)
+- `GET /api/teachers` - Get all teachers
+- `POST /api/teachers` - Create teacher
 - `GET /api/teachers/:id` - Get teacher by ID
-- `POST /api/teachers` - Create new teacher
 - `PUT /api/teachers/:id` - Update teacher
 - `DELETE /api/teachers/:id` - Delete teacher
 - `GET /api/teachers/search` - Search teachers
 - `GET /api/teachers/school/:schoolId` - Get teachers by school
 
-### Other Endpoints
-- `GET /api/classes` - Classes management
-- `GET /api/subjects` - Subjects management
-- `GET /api/attendance` - Attendance management
-- `GET /api/marks` - Marks management
-- `GET /api/events` - Events management
-- `GET /api/notes` - Notes management
-- `GET /api/timetable` - Timetable management
+### Attendance
+- `GET /api/attendance` - Get attendance records
+- `POST /api/attendance` - Create attendance record
+- `PUT /api/attendance/:id` - Update attendance record
+- `POST /api/attendance/bulk` - Bulk update attendance
+- `DELETE /api/attendance/:id` - Delete attendance record
 
-## 🔐 Authentication
+### Marks
+- `GET /api/marks` - Get marks records
+- `POST /api/marks` - Create marks record
+- `PUT /api/marks/:id` - Update marks record
+- `GET /api/marks/student/:studentId` - Get marks by student
+- `DELETE /api/marks/:id` - Delete marks record
 
-The API uses JWT (JSON Web Tokens) for authentication. Include the token in the Authorization header:
+### Classes
+- `GET /api/classes` - Get all classes
+- `POST /api/classes` - Create class
+- `GET /api/classes/:id` - Get class by ID
+- `PUT /api/classes/:id` - Update class
+- `DELETE /api/classes/:id` - Delete class
+- `GET /api/classes/school/:schoolId` - Get classes by school
 
-```
-Authorization: Bearer <your-jwt-token>
-```
+### Subjects
+- `GET /api/subjects` - Get all subjects
+- `POST /api/subjects` - Create subject
+- `GET /api/subjects/:id` - Get subject by ID
+- `PUT /api/subjects/:id` - Update subject
+- `DELETE /api/subjects/:id` - Delete subject
+- `GET /api/subjects/class/:classId` - Get subjects by class
 
-### User Roles
-- `student` - Student access
-- `teacher` - Teacher access
-- `admin` - Administrator access
-- `super_admin` - Super administrator access
+### Events
+- `GET /api/events` - Get all events
+- `POST /api/events` - Create event
+- `GET /api/events/:id` - Get event by ID
+- `PUT /api/events/:id` - Update event
+- `DELETE /api/events/:id` - Delete event
+- `GET /api/events/upcoming` - Get upcoming events
+- `GET /api/events/school/:schoolId` - Get events by school
 
-## 📊 Database Schema
+### Notes
+- `GET /api/notes` - Get all notes
+- `POST /api/notes` - Create note
+- `GET /api/notes/:id` - Get note by ID
+- `PUT /api/notes/:id` - Update note
+- `DELETE /api/notes/:id` - Delete note
+- `GET /api/notes/published` - Get published notes
+- `GET /api/notes/teacher/:teacherId` - Get notes by teacher
+- `GET /api/notes/class/:classId` - Get notes by class
+- `PUT /api/notes/:id/publish` - Publish/unpublish note
 
-The system uses PostgreSQL with the following main entities:
+### Timetable
+- `GET /api/timetable` - Get timetable (placeholder)
+- `POST /api/timetable` - Create timetable entry (placeholder)
+- `PUT /api/timetable/:id` - Update timetable entry (placeholder)
+- `GET /api/timetable/class/:classId` - Get timetable by class (placeholder)
+- `GET /api/timetable/teacher/:teacherId` - Get timetable by teacher (placeholder)
 
-- **Users** - Base user accounts
-- **Student Profiles** - Student-specific information
-- **Teacher Profiles** - Teacher-specific information
-- **Classes** - Class information
-- **Subjects** - Subject information
-- **Attendance** - Student and teacher attendance
-- **Marks** - Student marks and grades
-- **Events** - School events
-- **Notes** - Digital notes and resources
-- **Timetables** - Class and teacher timetables
+## 🔐 Authentication & Authorization
+
+The API uses JWT-based authentication with role-based access control:
+
+- **Student**: Can view their own data, marks, attendance, events, and published notes
+- **Teacher**: Can manage students, marks, attendance, events, and notes in their classes
+- **Admin**: Full access to all resources and user management
+- **Super Admin**: System-wide administrative access
 
 ## 🛡️ Security Features
 
-- **Helmet** - Security headers
-- **CORS** - Cross-origin resource sharing
-- **Rate Limiting** - API rate limiting
-- **Input Validation** - Request validation using express-validator
-- **Password Hashing** - bcrypt for password security
-- **JWT** - Secure token-based authentication
+- **Rate Limiting**: Prevents abuse with configurable limits
+- **CORS**: Configurable cross-origin resource sharing
+- **Helmet**: Security headers for protection
+- **Input Validation**: Comprehensive validation using express-validator
+- **Password Hashing**: bcrypt with configurable rounds
+- **JWT Security**: Secure token generation and verification
 
-## 📝 Logging
+## 📊 Logging
 
-The application uses Winston for structured logging with different levels:
-- `error` - Error logs
-- `warn` - Warning logs
-- `info` - Information logs
-- `debug` - Debug logs
+The application uses Winston for comprehensive logging:
 
-Logs are written to:
-- Console (development)
-- `logs/error.log` (error logs)
-- `logs/combined.log` (all logs)
+- **Error Logs**: Stored in `logs/error.log`
+- **Combined Logs**: Stored in `logs/combined.log`
+- **Console Logs**: Development mode console output
+- **HTTP Logs**: Morgan HTTP request logging
 
-## 🧪 Development
+## 🗄️ Database Schema
 
-### Scripts
-- `npm start` - Start development server with nodemon
-- `npm run build` - Build TypeScript to JavaScript
+The application uses Supabase (PostgreSQL) with the following main tables:
 
-### Environment Variables
-All environment variables are validated using Zod schema. See `src/config/environment.ts` for the complete list.
+- `schools` - School information
+- `classes` - Class/grade information
+- `users` - User accounts and authentication
+- `student_profiles` - Student detailed information
+- `teacher_profiles` - Teacher detailed information
+- `subjects` - Subject information
+- `student_attendance` - Attendance records
+- `marks` - Academic marks and grades
+- `events` - School events and announcements
+- `teacher_notes` - Teacher notes and resources
 
-## 🚀 Deployment
+## 🧪 Testing
 
-1. **Build the application**
-   ```bash
-   npm run build
-   ```
+```bash
+# Run tests (when implemented)
+npm test
 
-2. **Set production environment variables**
-   ```bash
-   NODE_ENV=production
-   ```
+# Run tests with coverage
+npm run test:coverage
+```
 
-3. **Start the production server**
-   ```bash
-   node dist/server.js
-   ```
+## 📝 API Documentation
 
-## 📚 API Documentation
+The API follows RESTful conventions with consistent response formats:
 
-### Response Format
-All API responses follow this format:
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Operation completed successfully",
   "data": { ... },
-  "pagination": { ... } // For paginated responses
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 100,
+    "totalPages": 10
+  }
 }
 ```
 
-### Error Format
-```json
-{
-  "success": false,
-  "message": "Error message",
-  "error": "Detailed error information" // Only in development
-}
+## 🚀 Deployment
+
+### Environment Variables for Production
+- Set `NODE_ENV=production`
+- Use strong JWT secrets
+- Configure proper CORS origins
+- Set up proper logging levels
+- Configure rate limiting for production load
+
+### Docker (Optional)
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY dist ./dist
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
 ```
 
 ## 🤝 Contributing
@@ -265,16 +339,8 @@ This project is licensed under the ISC License.
 
 ## 🆘 Support
 
-For support and questions, please open an issue in the repository.
-
-## 🔄 Migration from MongoDB
-
-This project has been migrated from MongoDB to Supabase (PostgreSQL). The migration includes:
-
-- Database schema redesign for PostgreSQL
-- Service layer implementation for Supabase
-- Type-safe database operations
-- Enhanced error handling
-- Improved security and validation
-
-The old MongoDB models are still present in the `models/` directory for reference but are no longer used.
+For support and questions:
+- Check the API documentation
+- Review the logs in the `logs/` directory
+- Ensure all environment variables are properly configured
+- Verify Supabase connection and schema setup

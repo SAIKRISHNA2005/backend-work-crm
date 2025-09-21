@@ -18,16 +18,6 @@ import marksRoutes from "./routes/marksRoutes";
 import eventRoutes from "./routes/eventRoutes";
 import noteRoutes from "./routes/noteRoutes";
 import timetableRoutes from "./routes/timetableRoutes";
-import announcementRoutes from "./routes/announcementRoutes";
-import teacherNotesRoutes from "./routes/teacherNotesRoutes";
-import digitalNotesRoutes from "./routes/digitalNotesRoutes";
-import examsRoutes from "./routes/examsRoutes";
-import examSubjectsRoutes from "./routes/examSubjectsRoutes";
-import academicCalendarRoutes from "./routes/academicCalendarRoutes";
-import achievementRoutes from "./routes/achievementRoutes";
-import enquiryRoutes from "./routes/enquiryRoutes";
-import leaderboardRoutes from "./routes/leaderboardRoutes";
-import feeRoutes from "./routes/feeRoutes";
 
 const app = express();
 
@@ -69,16 +59,6 @@ app.use('/api/marks', marksRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/timetable', timetableRoutes);
-app.use('/api/announcements', announcementRoutes);
-app.use('/api/teacher-notes', teacherNotesRoutes);
-app.use('/api/digital-notes', digitalNotesRoutes);
-app.use('/api/exams', examsRoutes);
-app.use('/api/exam-subjects', examSubjectsRoutes);
-app.use('/api/academic-calendar', academicCalendarRoutes);
-app.use('/api/achievements', achievementRoutes);
-app.use('/api/enquiries', enquiryRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
-app.use('/api/fees', feeRoutes);
 
 // API documentation endpoint
 app.get('/api', (req, res) => {
@@ -96,17 +76,7 @@ app.get('/api', (req, res) => {
       marks: '/api/marks',
       events: '/api/events',
       notes: '/api/notes',
-      timetable: '/api/timetable',
-      announcements: '/api/announcements',
-      teacherNotes: '/api/teacher-notes',
-      digitalNotes: '/api/digital-notes',
-      exams: '/api/exams',
-      examSubjects: '/api/exam-subjects',
-      academicCalendar: '/api/academic-calendar',
-      achievements: '/api/achievements',
-      enquiries: '/api/enquiries',
-      leaderboard: '/api/leaderboard',
-      fees: '/api/fees'
+      timetable: '/api/timetable'
     },
     documentation: '/api/docs'
   });

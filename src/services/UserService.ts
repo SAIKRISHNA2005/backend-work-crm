@@ -1,4 +1,3 @@
-import { DatabaseService } from "./database";
 import { supabase } from "../config/database";
 import { logger } from "../utils/logger";
 import bcrypt from "bcryptjs";
@@ -11,20 +10,29 @@ export class UserService {
     email?: string;
     phone?: string;
     password: string;
-    role: 'student' | 'teacher' | 'admin' | 'super_admin';
+    role: string;
   }) {
     try {
       // Hash password
       const hashedPassword = await bcrypt.hash(userData.password, config.security.bcryptRounds);
 
-      const user = await DatabaseService.create('users', {
-        username: userData.username,
-        email: userData.email,
-        phone: userData.phone,
-        password_hash: hashedPassword,
-        role: userData.role,
-        status: 'active',
-      });
+      const { data: user, error } = await supabase
+        .from('users')
+        .insert({
+          username: userData.username,
+          email: userData.email,
+          phone: userData.phone,
+          password_hash: hashedPassword,
+          role: userData.role,
+          status: 'active'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        logger.error('Error creating user:', error);
+        throw error;
+      }
 
       return user;
     } catch (error) {
@@ -36,55 +44,63 @@ export class UserService {
   // Find user by username
   static async findByUsername(username: string) {
     try {
-      return await DatabaseService.findByField('users', 'username', username);
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .single();
+
+      if (error) {
+        logger.error('Error finding user by username:', error);
+        return null;
+      }
+
+      return data;
     } catch (error) {
       logger.error('Error finding user by username:', error);
-      throw error;
+      return null;
     }
   }
 
   // Find user by email
   static async findByEmail(email: string) {
     try {
-      return await DatabaseService.findByField('users', 'email', email);
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (error) {
+        logger.error('Error finding user by email:', error);
+        return null;
+      }
+
+      return data;
     } catch (error) {
       logger.error('Error finding user by email:', error);
-      throw error;
+      return null;
     }
   }
 
   // Find user by ID
   static async findById(id: number) {
     try {
-      return await DatabaseService.findById('users', id);
-    } catch (error) {
-      logger.error('Error finding user by ID:', error);
-      throw error;
-    }
-  }
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-  // Update user
-  static async updateUser(id: number, updateData: {
-    username?: string;
-    email?: string;
-    phone?: string;
-    password?: string;
-    role?: 'student' | 'teacher' | 'admin' | 'super_admin';
-    status?: string;
-  }) {
-    try {
-      const updateFields: any = { ...updateData };
-
-      // Hash password if provided
-      if (updateData.password) {
-        updateFields.password_hash = await bcrypt.hash(updateData.password, config.security.bcryptRounds);
-        delete updateFields.password;
+      if (error) {
+        logger.error('Error finding user by ID:', error);
+        return null;
       }
 
-      return await DatabaseService.update('users', id, updateFields);
+      return data;
     } catch (error) {
-      logger.error('Error updating user:', error);
-      throw error;
+      logger.error('Error finding user by ID:', error);
+      return null;
     }
   }
 
@@ -94,31 +110,80 @@ export class UserService {
       return await bcrypt.compare(plainPassword, hashedPassword);
     } catch (error) {
       logger.error('Error verifying password:', error);
-      throw error;
+      return false;
     }
   }
 
-  // Get all users with pagination
-  static async getAllUsers(options?: {
-    limit?: number;
-    offset?: number;
+  // Update user
+  static async updateUser(id: number, updateData: {
+    username?: string;
+    email?: string;
+    phone?: string;
+    password?: string;
     role?: string;
     status?: string;
   }) {
     try {
-      const filters: Record<string, any> = {};
-      if (options?.role) filters.role = options.role;
-      if (options?.status) filters.status = options.status;
+      const updateFields: any = { ...updateData };
+      
+      // Hash password if provided
+      if (updateData.password) {
+        updateFields.password_hash = await bcrypt.hash(updateData.password, config.security.bcryptRounds);
+        delete updateFields.password;
+      }
 
-      return await DatabaseService.findAll('users', {
-        ...options,
-        filters,
-        orderBy: 'created_at',
-        orderDirection: 'desc',
-      });
+      const { data, error } = await supabase
+        .from('users')
+        .update(updateFields)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        logger.error('Error updating user:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('Error updating user:', error);
+      throw error;
+    }
+  }
+
+  // Get all users
+  static async getAllUsers(options?: {
+    limit?: number;
+    offset?: number;
+    role?: string;
+  }) {
+    try {
+      let query = supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (options?.role) {
+        query = query.eq('role', options.role);
+      }
+      if (options?.limit) {
+        query = query.limit(options.limit);
+      }
+      if (options?.offset) {
+        query = query.range(options.offset, options.offset + (options.limit || 10) - 1);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        logger.error('Error getting all users:', error);
+        return [];
+      }
+
+      return data || [];
     } catch (error) {
       logger.error('Error getting all users:', error);
-      throw error;
+      return [];
     }
   }
 
@@ -128,21 +193,49 @@ export class UserService {
     offset?: number;
   }) {
     try {
-      return await DatabaseService.search('users', searchTerm, ['username', 'email'], {
-        ...options,
-        orderBy: 'created_at',
-        orderDirection: 'desc',
-      });
+      let query = supabase
+        .from('users')
+        .select('*')
+        .or(`username.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`)
+        .order('created_at', { ascending: false });
+
+      if (options?.limit) {
+        query = query.limit(options.limit);
+      }
+      if (options?.offset) {
+        query = query.range(options.offset, options.offset + (options.limit || 10) - 1);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        logger.error('Error searching users:', error);
+        return [];
+      }
+
+      return data || [];
     } catch (error) {
       logger.error('Error searching users:', error);
-      throw error;
+      return [];
     }
   }
 
   // Delete user
   static async deleteUser(id: number) {
     try {
-      return await DatabaseService.delete('users', id);
+      const { data, error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        logger.error('Error deleting user:', error);
+        throw error;
+      }
+
+      return data;
     } catch (error) {
       logger.error('Error deleting user:', error);
       throw error;
@@ -150,12 +243,27 @@ export class UserService {
   }
 
   // Get user count
-  static async getUserCount(filters?: { role?: string; status?: string }) {
+  static async getUserCount(filters?: { role?: string }) {
     try {
-      return await DatabaseService.count('users', filters);
+      let query = supabase
+        .from('users')
+        .select('*', { count: 'exact', head: true });
+
+      if (filters?.role) {
+        query = query.eq('role', filters.role);
+      }
+
+      const { count, error } = await query;
+
+      if (error) {
+        logger.error('Error getting user count:', error);
+        return 0;
+      }
+
+      return count || 0;
     } catch (error) {
       logger.error('Error getting user count:', error);
-      throw error;
+      return 0;
     }
   }
 }

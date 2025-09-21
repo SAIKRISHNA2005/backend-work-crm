@@ -6,6 +6,23 @@ import { authValidations, handleValidationErrors } from "../middleware/validatio
 
 const router = express.Router();
 
+// Info route
+router.get("/info", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Authentication endpoints",
+    endpoints: {
+      login: "POST /api/auth/login",
+      register: "POST /api/auth/register",
+      profile: "GET /api/auth/profile",
+      updateProfile: "PUT /api/auth/profile",
+      changePassword: "PUT /api/auth/change-password",
+      logout: "POST /api/auth/logout",
+      verify: "GET /api/auth/verify"
+    }
+  });
+});
+
 // Public routes
 router.post("/login", authValidations.login, handleValidationErrors, asyncHandler(AuthController.login));
 router.post("/register", authValidations.register, handleValidationErrors, asyncHandler(AuthController.register));

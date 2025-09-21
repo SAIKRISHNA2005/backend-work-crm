@@ -1,4 +1,3 @@
-import { DatabaseService } from "./database";
 import { supabase } from "../config/database";
 import { logger } from "../utils/logger";
 
@@ -20,7 +19,18 @@ export class TeacherService {
     salary_status?: string;
   }) {
     try {
-      return await DatabaseService.create('teacher_profiles', teacherData);
+      const { data, error } = await supabase
+        .from('teacher_profiles')
+        .insert([teacherData])
+        .select()
+        .single();
+
+      if (error) {
+        logger.error('Error creating teacher:', error);
+        throw error;
+      }
+
+      return data;
     } catch (error) {
       logger.error('Error creating teacher:', error);
       throw error;
@@ -30,7 +40,18 @@ export class TeacherService {
   // Find teacher by ID
   static async findById(id: number) {
     try {
-      return await DatabaseService.findById('teacher_profiles', id);
+      const { data, error } = await supabase
+        .from('teacher_profiles')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        logger.error('Error finding teacher by ID:', error);
+        return null;
+      }
+
+      return data;
     } catch (error) {
       logger.error('Error finding teacher by ID:', error);
       throw error;
@@ -40,7 +61,18 @@ export class TeacherService {
   // Find teacher by user ID
   static async findByUserId(userId: number) {
     try {
-      return await DatabaseService.findByField('teacher_profiles', 'user_id', userId);
+      const { data, error } = await supabase
+        .from('teacher_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        logger.error('Error finding teacher by user ID:', error);
+        return null;
+      }
+
+      return data;
     } catch (error) {
       logger.error('Error finding teacher by user ID:', error);
       throw error;
@@ -53,11 +85,27 @@ export class TeacherService {
     offset?: number;
   }) {
     try {
-      return await DatabaseService.findManyByField('teacher_profiles', 'school_id', schoolId, {
-        ...options,
-        orderBy: 'name',
-        orderDirection: 'asc',
-      });
+      let query = supabase
+        .from('teacher_profiles')
+        .select('*')
+        .eq('school_id', schoolId)
+        .order('name', { ascending: true });
+
+      if (options?.limit) {
+        query = query.limit(options.limit);
+      }
+      if (options?.offset) {
+        query = query.range(options.offset, options.offset + (options.limit || 10) - 1);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        logger.error('Error getting teachers by school:', error);
+        return [];
+      }
+
+      return data || [];
     } catch (error) {
       logger.error('Error getting teachers by school:', error);
       throw error;
@@ -67,7 +115,7 @@ export class TeacherService {
   // Get teachers by home class
   static async getTeachersByHomeClass(classId: number) {
     try {
-      return await DatabaseService.findManyByField('teacher_profiles', 'home_class_id', classId);
+      return await supabase.findManyByField('teacher_profiles', 'home_class_id', classId);
     } catch (error) {
       logger.error('Error getting teachers by home class:', error);
       throw error;
@@ -89,7 +137,7 @@ export class TeacherService {
     salary_status?: string;
   }) {
     try {
-      return await DatabaseService.update('teacher_profiles', id, updateData);
+      return await supabase.update('teacher_profiles', id, updateData);
     } catch (error) {
       logger.error('Error updating teacher:', error);
       throw error;
@@ -106,7 +154,7 @@ export class TeacherService {
       const filters: Record<string, any> = {};
       if (options?.school_id) filters.school_id = options.school_id;
 
-      return await DatabaseService.findAll('teacher_profiles', {
+      return await supabase.findAll('teacher_profiles', {
         ...options,
         filters,
         orderBy: 'name',
@@ -150,7 +198,7 @@ export class TeacherService {
   // Delete teacher
   static async deleteTeacher(id: number) {
     try {
-      return await DatabaseService.delete('teacher_profiles', id);
+      return await supabase.delete('teacher_profiles', id);
     } catch (error) {
       logger.error('Error deleting teacher:', error);
       throw error;
@@ -160,7 +208,7 @@ export class TeacherService {
   // Get teacher count
   static async getTeacherCount(filters?: { school_id?: number }) {
     try {
-      return await DatabaseService.count('teacher_profiles', filters);
+      return await supabase.count('teacher_profiles', filters);
     } catch (error) {
       logger.error('Error getting teacher count:', error);
       throw error;
@@ -168,7 +216,7 @@ export class TeacherService {
   }
 
   // Get teacher with user details
-  static async getTeacherWithUser(id: number) {
+  static async getTeacherWithUser(userId: number) {
     try {
       const { data, error } = await supabase
         .from('teacher_profiles')
@@ -178,7 +226,7 @@ export class TeacherService {
           classes!teacher_profiles_home_class_id_fkey(name, section, room_number),
           schools(name, address, location)
         `)
-        .eq('id', id)
+        .eq('user_id', userId)
         .single();
 
       if (error) {
@@ -217,7 +265,7 @@ export class TeacherService {
   // Update teacher attendance percentage
   static async updateAttendancePercentage(teacherId: number, percentage: number) {
     try {
-      return await DatabaseService.update('teacher_profiles', teacherId, {
+      return await supabase.update('teacher_profiles', teacherId, {
         personal_attendance_percent: percentage
       });
     } catch (error) {
@@ -229,7 +277,7 @@ export class TeacherService {
   // Update teacher leave count
   static async updateLeaveCount(teacherId: number, leaveCount: number) {
     try {
-      return await DatabaseService.update('teacher_profiles', teacherId, {
+      return await supabase.update('teacher_profiles', teacherId, {
         leaves_count: leaveCount
       });
     } catch (error) {

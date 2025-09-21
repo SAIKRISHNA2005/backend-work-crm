@@ -43,22 +43,19 @@ export const errorHandler = (
     userAgent: req.get("User-Agent"),
   });
 
-  // Mongoose bad ObjectId
-  if (err.name === "CastError") {
-    const message = "Resource not found";
-    error = new CustomError(message, 404);
-  }
-
-  // Mongoose duplicate key
-  if ((err as any).code === 11000) {
-    const field = Object.keys((err as any).keyValue)[0];
-    const message = `${field} already exists`;
+  // PostgreSQL/Supabase specific errors
+  if ((err as any).code === '23505') {
+    const message = "Duplicate entry - resource already exists";
     error = new CustomError(message, 400);
   }
 
-  // Mongoose validation error
-  if (err.name === "ValidationError") {
-    const message = Object.values((err as any).errors).map((val: any) => val.message).join(", ");
+  if ((err as any).code === '23503') {
+    const message = "Foreign key constraint violation";
+    error = new CustomError(message, 400);
+  }
+
+  if ((err as any).code === '23502') {
+    const message = "Required field is missing";
     error = new CustomError(message, 400);
   }
 
